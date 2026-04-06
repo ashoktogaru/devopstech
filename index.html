@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Devops Tech — Zero to Hero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111418;
+    --surface2: #161b22;
+    --border: #21262d;
+    --accent: #00ff88;
+    --accent2: #00b4ff;
+    --accent3: #ff6b35;
+    --text: #e6edf3;
+    --text-muted: #7d8590;
+    --text-dim: #484f58;
+    --glow: 0 0 20px rgba(0,255,136,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(10,12,16,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { font-size: 0.85rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s; font-weight: 600; }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    overflow: hidden;
+    z-index: 1;
+  }
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,255,136,0.08) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    animation: pulse 4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; }
+    50% { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
+  }
+  .badge {
+    display: inline-block;
+    background: rgba(0,255,136,0.1);
+    border: 1px solid rgba(0,255,136,0.3);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 2rem;
+    letter-spacing: 0.1em;
+    animation: fadeDown 0.8s ease both;
+  }
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero h1 {
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 800; line-height: 1;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.9s 0.1s ease both;
+  }
+  .hero h1 span { color: var(--accent); }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero p {
+    font-size: 1.2rem; color: var(--text-muted);
+    max-width: 560px; line-height: 1.7;
+    animation: fadeUp 0.9s 0.2s ease both;
+    margin-bottom: 2.5rem;
+  }
+  .hero-cta {
+    display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+    animation: fadeUp 0.9s 0.3s ease both;
+  }
+  .btn-primary {
+    background: var(--accent); color: #000;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
+    padding: 0.9rem 2.2rem; border: none; border-radius: 8px;
+    cursor: pointer; transition: all 0.2s; text-decoration: none;
+    box-shadow: 0 0 30px rgba(0,255,136,0.25);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(0,255,136,0.4); }
+  .btn-ghost {
+    background: transparent; color: var(--text);
+    font-family: 'Syne', sans-serif; font-weight: 600; font-size: 1rem;
+    padding: 0.9rem 2.2rem; border: 1px solid var(--border);
+    border-radius: 8px; cursor: pointer; transition: all 0.2s; text-decoration: none;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .stats-row {
+    display: flex; gap: 3rem; justify-content: center; flex-wrap: wrap;
+    margin-top: 4rem;
+    animation: fadeUp 0.9s 0.4s ease both;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-size: 2rem; font-weight: 800; color: var(--accent); font-family: 'Space Mono', monospace; }
+  .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+  /* SECTIONS */
+  section {
+    position: relative; z-index: 1;
+    padding: 5rem 2rem;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; color: var(--accent);
+    letter-spacing: 0.15em; margin-bottom: 0.75rem;
+  }
+  .section-title { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 1rem; }
+  .section-sub { color: var(--text-muted); font-size: 1rem; line-height: 1.7; max-width: 600px; margin-bottom: 3rem; }
+
+  /* TERMINAL */
+  .terminal {
+    background: #0d1117; border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden; margin: 2rem 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .terminal-bar {
+    background: var(--surface2); padding: 0.6rem 1rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-r { background: #ff5f56; }
+  .dot-y { background: #ffbd2e; }
+  .dot-g { background: #27c93f; }
+  .term-title { font-size: 0.75rem; color: var(--text-dim); margin-left: 0.5rem; }
+  .terminal-body { padding: 1.5rem; font-size: 0.85rem; line-height: 2; }
+  .term-line { display: flex; gap: 0.5rem; }
+  .term-prompt { color: var(--accent); }
+  .term-cmd { color: var(--text); }
+  .term-out { color: var(--text-muted); padding-left: 1rem; }
+  .term-comment { color: var(--text-dim); font-style: italic; }
+
+  /* ROADMAP */
+  .roadmap { position: relative; }
+  .road-line {
+    position: absolute; left: 28px; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2), transparent);
+    opacity: 0.3;
+  }
+  .phase { display: flex; gap: 2rem; margin-bottom: 1.5rem; cursor: pointer; }
+  .phase-dot {
+    flex-shrink: 0; width: 58px; height: 58px; border-radius: 50%;
+    background: var(--surface2); border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; transition: all 0.3s; position: relative; z-index: 1;
+  }
+  .phase:hover .phase-dot, .phase.active .phase-dot {
+    border-color: var(--accent); box-shadow: var(--glow);
+    background: rgba(0,255,136,0.05);
+  }
+  .phase-body {
+    flex: 1; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.5rem; transition: all 0.3s;
+  }
+  .phase:hover .phase-body, .phase.active .phase-body {
+    border-color: rgba(0,255,136,0.2); background: var(--surface2);
+  }
+  .phase-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+  .phase-num { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--accent); margin-bottom: 0.3rem; }
+  .phase-title { font-size: 1.1rem; font-weight: 700; }
+  .phase-duration {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-dim);
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 0.2rem 0.6rem; border-radius: 100px; white-space: nowrap;
+  }
+  .phase-desc { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; }
+  .phase-content { display: none; }
+  .phase.active .phase-content { display: block; animation: slideDown 0.3s ease; }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .topics-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.5rem; margin-bottom: 1rem;
+  }
+  .topic-tag {
+    display: flex; align-items: center; gap: 0.5rem;
+    background: rgba(0,180,255,0.06); border: 1px solid rgba(0,180,255,0.15);
+    border-radius: 6px; padding: 0.5rem 0.75rem;
+    font-size: 0.82rem; font-family: 'JetBrains Mono', monospace;
+    color: var(--accent2); transition: all 0.2s; cursor: pointer;
+  }
+  .topic-tag:hover { background: rgba(0,180,255,0.12); border-color: var(--accent2); }
+  .topic-tag.done { background: rgba(35,134,54,0.1); border-color: rgba(35,134,54,0.3); color: #3fb950; }
+  .topic-tag .check { opacity: 0; transition: 0.2s; }
+  .topic-tag.done .check { opacity: 1; }
+  .lab-box {
+    background: rgba(255,107,53,0.06); border: 1px solid rgba(255,107,53,0.2);
+    border-radius: 8px; padding: 1rem; margin-top: 0.5rem;
+  }
+  .lab-title {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    color: var(--accent3); margin-bottom: 0.5rem; letter-spacing: 0.1em;
+  }
+  .lab-item {
+    font-size: 0.85rem; color: var(--text-muted); padding: 0.3rem 0;
+    border-bottom: 1px solid rgba(255,107,53,0.1);
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .lab-item:last-child { border-bottom: none; }
+  .lab-item::before { content: '▸'; color: var(--accent3); }
+
+  /* TOOLS */
+  .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
+  .tool-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.2rem; text-align: center; transition: all 0.3s; cursor: pointer;
+  }
+  .tool-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,255,136,0.1); }
+  .tool-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+  .tool-name { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .tool-cat { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--text-dim); }
+
+  /* PROGRESS */
+  .progress-section {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 2rem; margin-bottom: 2rem;
+  }
+  .progress-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+  .progress-title { font-size: 1.1rem; font-weight: 700; }
+  .progress-pct { font-family: 'Space Mono', monospace; font-size: 1.5rem; color: var(--accent); }
+  .progress-bar { height: 8px; background: var(--surface2); border-radius: 100px; overflow: hidden; margin-bottom: 1.5rem; }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 100px; width: 0%; transition: width 1s ease;
+  }
+  .phase-bars { display: flex; flex-direction: column; gap: 0.75rem; }
+  .phase-bar-row { display: flex; align-items: center; gap: 1rem; font-size: 0.85rem; }
+  .phase-bar-label { width: 130px; color: var(--text-muted); font-size: 0.8rem; }
+  .phase-bar-track { flex: 1; height: 4px; background: var(--surface2); border-radius: 100px; overflow: hidden; }
+  .phase-bar-fill { height: 100%; border-radius: 100px; background: var(--accent); width: 0%; transition: width 1s ease; }
+  .phase-bar-count { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-dim); width: 50px; text-align: right; }
+
+  /* RESOURCES */
+  .resource-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+  .resource-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.5rem; transition: all 0.3s;
+  }
+  .resource-card:hover { border-color: rgba(0,180,255,0.3); transform: translateY(-2px); }
+  .resource-type { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .resource-name { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .resource-desc { font-size: 0.83rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem; }
+  .resource-link {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+    color: var(--accent2); text-decoration: none; border-bottom: 1px solid transparent; transition: 0.2s;
+  }
+  .resource-link:hover { border-color: var(--accent2); }
+
+  /* DIVIDER */
+  .full-divider {
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    position: relative; z-index: 1;
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative; z-index: 1;
+    text-align: center; padding: 3rem 2rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim); font-size: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  footer span { color: var(--accent); }
+
+  /* REVEAL */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media(max-width: 640px) {
+    .nav-links { display: none; }
+    .stats-row { gap: 1.5rem; }
+    .road-line { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Devops<span style="color:var(--text-muted)"> Tech</span></div>
+  <ul class="nav-links">
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#progress">Progress</a></li>
+    <li><a href="#resources">Resources</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="badge">// START YOUR DEVOPS JOURNEY</div>
+  <h1>From Zero<br>to <span>DevOps</span><br>Engineer</h1>
+  <p>A complete, structured roadmap to master DevOps — from AWS cloud basics to Kubernetes orchestration. Learn step by step, track your progress, and build real-world skills.</p>
+  <div class="hero-cta">
+    <a href="#roadmap" class="btn-primary">Start Learning →</a>
+    <a href="#progress" class="btn-ghost">Track Progress</a>
+  </div>
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-num">7</div>
+      <div class="stat-label">Learning Phases</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">65+</div>
+      <div class="stat-label">Topics Covered</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">4–6</div>
+      <div class="stat-label">Months to Master</div>
+    </div>
+  </div>
+</div>
+
+<div class="full-divider"></div>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <p class="section-label">// THE PATH</p>
+  <h2 class="section-title">Your Learning Roadmap</h2>
+  <p class="section-sub">Click any phase to expand topics and labs. Check off each topic as you complete it — your progress is saved automatically.</p>
+
+  <div class="terminal reveal">
+    <div class="terminal-bar">
+      <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+      <span class="term-title">devops-journey.sh</span>
+    </div>
+    <div class="terminal-body">
+      <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd"> echo "Welcome to Devops Tech"</span></div>
+      <div class="term-out">Welcome to Devops Tech</div>
+      <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd"> sudo apt install discipline patience curiosity</span></div>
+      <div class="term-out">All packages installed successfully ✓</div>
+      <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd"> ./start-learning.sh --phase=1 --topic=aws</span></div>
+      <div class="term-out term-comment"># Phase 1 → AWS Cloud Fundamentals loading...</div>
+    </div>
+  </div>
+
+  <div class="roadmap reveal" style="padding-left:0.5rem;">
+    <div class="road-line"></div>
+
+    <!-- PHASE 1 — AWS -->
+    <div class="phase" onclick="togglePhase(this)">
+      <div class="phase-dot">☁️</div>
+      <div class="phase-body">
+        <div class="phase-num">PHASE 01</div>
+        <div class="phase-header">
+          <div class="phase-title">AWS Cloud Fundamentals</div>
+          <div class="phase-duration">4 weeks</div>
+        </div>
+        <div class="phase-desc">Start with the world's #1 cloud platform. Master the core AWS services every DevOps engineer must know.</div>
+        <div class="phase-content">
+          <div class="topics-grid">
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> EC2 Instances</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> VPC & Subnets</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> IAM Roles & Policies</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> S3 Buckets & Storage</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> CloudFront CDN</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> CloudWatch Logs</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> CloudWatch Alarms</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Security Groups</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Elastic Load Balancer</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Auto Scaling Groups</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Route 53 DNS</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> AWS CLI</div>
+          </div>
+          <div class="lab-box">
+            <div class="lab-title">🔬 HANDS-ON LABS</div>
+            <div class="lab-item">Launch EC2 instance, configure Security Groups and SSH access</div>
+            <div class="lab-item">Build a custom VPC with public and private subnets from scratch</div>
+            <div class="lab-item">Create IAM users, groups, roles and attach least-privilege policies</div>
+            <div class="lab-item">Host a static website on S3 and serve it globally via CloudFront</div>
+            <div class="lab-item">Set up CloudWatch alarms and log groups for EC2 health monitoring</div>
+            <div class="lab-item">Configure Application Load Balancer with Auto Scaling Group</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 2 — LINUX -->
+    <div class="phase" onclick="togglePhase(this)">
+      <div class="phase-dot">🐧</div>
+      <div class="phase-body">
+        <div class="phase-num">PHASE 02</div>
+        <div class="phase-header">
+          <div class="phase-title">Linux & Command Line</div>
+          <div class="phase-duration">2–3 weeks</div>
+        </div>
+        <div class="phase-desc">The foundation of every server and cloud system. Master Linux to control any environment confidently.</div>
+        <div class="phase-content">
+          <div class="topics-grid">
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> File System Navigation</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Users & Permissions</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Package Management (apt/yum)</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Processes & Jobs</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Bash Scripting</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> grep, awk, sed</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> vim / nano Editor</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Cron Jobs</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> SSH & Key Auth</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> systemd Services</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Networking Commands</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Firewall (UFW/iptables)</div>
+          </div>
+          <div class="lab-box">
+            <div class="lab-title">🔬 HANDS-ON LABS</div>
+            <div class="lab-item">Set up Ubuntu VM using VirtualBox or WSL2 on Windows</div>
+            <div class="lab-item">Write a bash script to automate system backups to AWS S3</div>
+            <div class="lab-item">Configure users, file permissions, and sudoers securely</div>
+            <div class="lab-item">Build a log monitoring script using grep, awk, and sed</div>
+            <div class="lab-item">Schedule automated tasks using cron and systemd timers</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 3 — GIT -->
+    <div class="phase" onclick="togglePhase(this)">
+      <div class="phase-dot">🐙</div>
+      <div class="phase-body">
+        <div class="phase-num">PHASE 03</div>
+        <div class="phase-header">
+          <div class="phase-title">Git & GitHub</div>
+          <div class="phase-duration">1–2 weeks</div>
+        </div>
+        <div class="phase-desc">Version control is the backbone of every team. Master Git and GitHub to collaborate like a professional engineer.</div>
+        <div class="phase-content">
+          <div class="topics-grid">
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Git Init & Clone</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Staging & Commits</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Branching Strategies</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Merge & Rebase</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Pull Requests</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> GitHub Repositories</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Git Hooks</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Tags & Releases</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> .gitignore & Config</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Conflict Resolution</div>
+          </div>
+          <div class="lab-box">
+            <div class="lab-title">🔬 HANDS-ON LABS</div>
+            <div class="lab-item">Create a GitHub repo and practice feature branching workflow</div>
+            <div class="lab-item">Simulate a team workflow with pull requests and code review</div>
+            <div class="lab-item">Write a pre-commit hook to run linting before every commit</div>
+            <div class="lab-item">Deliberately create and resolve merge conflicts hands-on</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 4 — DOCKER -->
+    <div class="phase" onclick="togglePhase(this)">
+      <div class="phase-dot">🐳</div>
+      <div class="phase-body">
+        <div class="phase-num">PHASE 04</div>
+        <div class="phase-header">
+          <div class="phase-title">Docker & Containers</div>
+          <div class="phase-duration">3 weeks</div>
+        </div>
+        <div class="phase-desc">Containerization changed DevOps forever. Learn Docker inside-out — from basics to production-ready deployments.</div>
+        <div class="phase-content">
+          <div class="topics-grid">
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Docker Architecture</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Images & Containers</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Dockerfile Writing</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Docker Compose</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Volumes & Networks</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Container Registries</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Multi-stage Builds</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Docker Security</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Environment Variables</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Container Logging</div>
+          </div>
+          <div class="lab-box">
+            <div class="lab-title">🔬 HANDS-ON LABS</div>
+            <div class="lab-item">Containerize a Node.js or Python web application end-to-end</div>
+            <div class="lab-item">Build multi-service app with Docker Compose (app + DB + cache)</div>
+            <div class="lab-item">Push images to Docker Hub and GitHub Container Registry</div>
+            <div class="lab-item">Optimize a Dockerfile for minimal size using multi-stage builds</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 5 — CI/CD -->
+    <div class="phase" onclick="togglePhase(this)">
+      <div class="phase-dot">⚙️</div>
+      <div class="phase-body">
+        <div class="phase-num">PHASE 05</div>
+        <div class="phase-header">
+          <div class="phase-title">CI/CD Pipelines</div>
+          <div class="phase-duration">3 weeks</div>
+        </div>
+        <div class="phase-desc">Automate your build, test, and deploy pipeline — the true heart of modern DevOps engineering.</div>
+        <div class="phase-content">
+          <div class="topics-grid">
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> CI/CD Concepts</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> GitHub Actions</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Jenkins Pipelines</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> GitLab CI/CD</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Pipeline Stages</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Secrets Management</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Artifact Storage</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Blue-Green Deploys</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Rolling Updates</div>
+          </div>
+          <div class="lab-box">
+            <div class="lab-title">🔬 HANDS-ON LABS</div>
+            <div class="lab-item">Build GitHub Actions workflow: test → build → push → deploy to AWS</div>
+            <div class="lab-item">Set up a Jenkins pipeline with Jenkinsfile and GitHub webhooks</div>
+            <div class="lab-item">Implement blue-green and rolling deployment strategies</div>
+            <div class="lab-item">Integrate Docker Hub push into a full CI/CD pipeline</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 6 — IaC -->
+    <div class="phase" onclick="togglePhase(this)">
+      <div class="phase-dot">🏗️</div>
+      <div class="phase-body">
+        <div class="phase-num">PHASE 06</div>
+        <div class="phase-header">
+          <div class="phase-title">Infrastructure as Code — Terraform</div>
+          <div class="phase-duration">3 weeks</div>
+        </div>
+        <div class="phase-desc">Provision, manage, and version your entire AWS infrastructure using code with Terraform.</div>
+        <div class="phase-content">
+          <div class="topics-grid">
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Terraform Basics</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Providers & Resources</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Variables & Outputs</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Terraform State</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Modules</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Workspaces</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Remote Backends (S3)</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Data Sources</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Terraform Cloud</div>
+          </div>
+          <div class="lab-box">
+            <div class="lab-title">🔬 HANDS-ON LABS</div>
+            <div class="lab-item">Provision AWS VPC + EC2 + Security Groups using Terraform</div>
+            <div class="lab-item">Store Terraform state in S3 with DynamoDB state locking</div>
+            <div class="lab-item">Build reusable Terraform modules for common AWS infrastructure</div>
+            <div class="lab-item">Integrate Terraform plan and apply into GitHub Actions pipeline</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 7 — KUBERNETES -->
+    <div class="phase" onclick="togglePhase(this)">
+      <div class="phase-dot">☸️</div>
+      <div class="phase-body">
+        <div class="phase-num">PHASE 07</div>
+        <div class="phase-header">
+          <div class="phase-title">Kubernetes & Orchestration</div>
+          <div class="phase-duration">4 weeks</div>
+        </div>
+        <div class="phase-desc">The gold standard for container orchestration. Deploy, scale, and manage containerized applications at any scale.</div>
+        <div class="phase-content">
+          <div class="topics-grid">
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> K8s Architecture</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Pods & Deployments</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Services & Ingress</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> ConfigMaps & Secrets</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Namespaces</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Auto-scaling (HPA)</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Persistent Volumes</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> RBAC & Security</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> Rolling Updates</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> AWS EKS Setup</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> kubectl CLI</div>
+            <div class="topic-tag" onclick="markDone(event,this)"><span class="check">✓</span> DaemonSets & Jobs</div>
+          </div>
+          <div class="lab-box">
+            <div class="lab-title">🔬 HANDS-ON LABS</div>
+            <div class="lab-item">Deploy a web app on Minikube / kind cluster locally</div>
+            <div class="lab-item">Implement HPA — Horizontal Pod Autoscaler under simulated load</div>
+            <div class="lab-item">Set up Nginx Ingress with SSL using cert-manager on EKS</div>
+            <div class="lab-item">Configure RBAC roles for multi-team cluster access control</div>
+            <div class="lab-item">Perform rolling update, rollback, and canary deployment</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="full-divider"></div>
+
+<!-- TOOLS -->
+<section id="tools">
+  <p class="section-label">// THE ARSENAL</p>
+  <h2 class="section-title">Essential DevOps Tools</h2>
+  <p class="section-sub">Every core tool you will use in your DevOps career, organized by category.</p>
+
+  <div class="tools-grid reveal">
+    <div class="tool-card"><div class="tool-icon">☁️</div><div class="tool-name">AWS</div><div class="tool-cat">CLOUD</div></div>
+    <div class="tool-card"><div class="tool-icon">🐧</div><div class="tool-name">Linux</div><div class="tool-cat">OS / SHELL</div></div>
+    <div class="tool-card"><div class="tool-icon">🐚</div><div class="tool-name">Bash</div><div class="tool-cat">SCRIPTING</div></div>
+    <div class="tool-card"><div class="tool-icon">🐙</div><div class="tool-name">Git</div><div class="tool-cat">VERSION CONTROL</div></div>
+    <div class="tool-card"><div class="tool-icon">🔲</div><div class="tool-name">GitHub</div><div class="tool-cat">CODE PLATFORM</div></div>
+    <div class="tool-card"><div class="tool-icon">🐳</div><div class="tool-name">Docker</div><div class="tool-cat">CONTAINERS</div></div>
+    <div class="tool-card"><div class="tool-icon">⚙️</div><div class="tool-name">Jenkins</div><div class="tool-cat">CI/CD</div></div>
+    <div class="tool-card"><div class="tool-icon">🚀</div><div class="tool-name">GitHub Actions</div><div class="tool-cat">CI/CD</div></div>
+    <div class="tool-card"><div class="tool-icon">🏗️</div><div class="tool-name">Terraform</div><div class="tool-cat">IaC</div></div>
+    <div class="tool-card"><div class="tool-icon">☸️</div><div class="tool-name">Kubernetes</div><div class="tool-cat">ORCHESTRATION</div></div>
+    <div class="tool-card"><div class="tool-icon">🛡️</div><div class="tool-name">IAM</div><div class="tool-cat">SECURITY</div></div>
+    <div class="tool-card"><div class="tool-icon">📡</div><div class="tool-name">CloudWatch</div><div class="tool-cat">MONITORING</div></div>
+  </div>
+</section>
+
+<div class="full-divider"></div>
+
+<!-- PROGRESS -->
+<section id="progress">
+  <p class="section-label">// YOUR JOURNEY</p>
+  <h2 class="section-title">Progress Tracker</h2>
+  <p class="section-sub">Mark topics done in each phase above to see your progress here. Data is saved automatically in your browser.</p>
+
+  <div class="progress-section reveal">
+    <div class="progress-header">
+      <div class="progress-title">Phases Completed</div>
+      <div class="progress-pct" id="total-pct">0%</div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="total-bar"></div>
+    </div>
+    <div class="phase-bars" id="phase-bars"></div>
+  </div>
+</section>
+
+<div class="full-divider"></div>
+
+<!-- RESOURCES -->
+<section id="resources">
+  <p class="section-label">// LEARN FROM THE BEST</p>
+  <h2 class="section-title">Curated Resources</h2>
+  <p class="section-sub">Hand-picked free and paid resources to accelerate your learning at every phase.</p>
+
+  <div class="resource-grid reveal">
+    <div class="resource-card">
+      <div class="resource-type" style="color:var(--accent)">📺 FREE COURSE</div>
+      <div class="resource-name">TechWorld with Nana</div>
+      <div class="resource-desc">The most popular DevOps YouTube channel with complete tutorials on Docker, Kubernetes, CI/CD, and AWS — all free.</div>
+      <a href="https://youtube.com/@TechWorldwithNana" class="resource-link" target="_blank">youtube.com/@TechWorldwithNana →</a>
+    </div>
+    <div class="resource-card">
+      <div class="resource-type" style="color:var(--accent2)">📚 ROADMAP</div>
+      <div class="resource-name">roadmap.sh/devops</div>
+      <div class="resource-desc">The official community DevOps roadmap — interactive, detailed, and constantly updated with industry standards.</div>
+      <a href="https://roadmap.sh/devops" class="resource-link" target="_blank">roadmap.sh/devops →</a>
+    </div>
+    <div class="resource-card">
+      <div class="resource-type" style="color:var(--accent3)">🎓 PAID COURSE</div>
+      <div class="resource-name">KodeKloud DevOps Engineer</div>
+      <div class="resource-desc">Hands-on labs and interactive playgrounds for Docker, Kubernetes, Terraform and AWS — best for practical learners.</div>
+      <a href="https://kodekloud.com" class="resource-link" target="_blank">kodekloud.com →</a>
+    </div>
+    <div class="resource-card">
+      <div class="resource-type" style="color:var(--accent3)">☁️ FREE TIER</div>
+      <div class="resource-name">AWS Free Tier</div>
+      <div class="resource-desc">12 months of free access to EC2, S3, CloudFront, CloudWatch and 100+ AWS services. Perfect for hands-on practice.</div>
+      <a href="https://aws.amazon.com/free" class="resource-link" target="_blank">aws.amazon.com/free →</a>
+    </div>
+    <div class="resource-card">
+      <div class="resource-type" style="color:var(--accent2)">🏋️ PRACTICE</div>
+      <div class="resource-name">Killercoda Interactive Labs</div>
+      <div class="resource-desc">Browser-based labs for Kubernetes, Docker, Linux, and CI/CD — zero local setup required, start in seconds.</div>
+      <a href="https://killercoda.com" class="resource-link" target="_blank">killercoda.com →</a>
+    </div>
+    <div class="resource-card">
+      <div class="resource-type" style="color:var(--accent)">📖 DOCS</div>
+      <div class="resource-name">Kubernetes Official Docs</div>
+      <div class="resource-desc">The authoritative source for Kubernetes concepts, API references, tutorials, and best practices from the core team.</div>
+      <a href="https://kubernetes.io/docs" class="resource-link" target="_blank">kubernetes.io/docs →</a>
+    </div>
+    <div class="resource-card">
+      <div class="resource-type" style="color:var(--accent)">📺 FREE</div>
+      <div class="resource-name">FreeCodeCamp DevOps</div>
+      <div class="resource-desc">Full-length courses on Docker, Kubernetes, AWS, and Terraform — all on YouTube with absolutely no paywall.</div>
+      <a href="https://youtube.com/@freecodecamp" class="resource-link" target="_blank">youtube.com/@freecodecamp →</a>
+    </div>
+    <div class="resource-card">
+      <div class="resource-type" style="color:var(--accent2)">📋 CERTIFICATION</div>
+      <div class="resource-name">CKA — Certified Kubernetes Admin</div>
+      <div class="resource-desc">The most respected Kubernetes certification. Hands-on practical exam, widely recognized by top employers worldwide.</div>
+      <a href="https://training.linuxfoundation.org/certification/certified-kubernetes-administrator-cka/" class="resource-link" target="_blank">Linux Foundation →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Built for your DevOps journey &nbsp;•&nbsp; <span>Devops Tech</span> &nbsp;•&nbsp; Host on GitHub Pages: Settings → Pages → main branch</p>
+</footer>
+
+<script>
+  function togglePhase(el) {
+    const isActive = el.classList.contains('active');
+    document.querySelectorAll('.phase').forEach(p => p.classList.remove('active'));
+    if (!isActive) el.classList.add('active');
+  }
+
+  function markDone(e, el) {
+    e.stopPropagation();
+    el.classList.toggle('done');
+    saveProgress();
+    updateProgress();
+  }
+
+  const phaseNames = ['AWS Cloud','Linux & CLI','Git & GitHub','Docker','CI/CD','Terraform','Kubernetes'];
+
+  function countTopics() {
+    return Array.from(document.querySelectorAll('.phase')).map(phase => ({
+      all: phase.querySelectorAll('.topic-tag').length,
+      done: phase.querySelectorAll('.topic-tag.done').length
+    }));
+  }
+
+  function updateProgress() {
+    const data = countTopics();
+    const totalAll = data.reduce((s,d) => s + d.all, 0);
+    const totalDone = data.reduce((s,d) => s + d.done, 0);
+    const pct = totalAll ? Math.round(totalDone / totalAll * 100) : 0;
+
+    document.getElementById('total-pct').textContent = pct + '%';
+    setTimeout(() => { document.getElementById('total-bar').style.width = pct + '%'; }, 100);
+
+    const container = document.getElementById('phase-bars');
+    container.innerHTML = '';
+    data.forEach((d, i) => {
+      const p = d.all ? Math.round(d.done / d.all * 100) : 0;
+      const row = document.createElement('div');
+      row.className = 'phase-bar-row';
+      row.innerHTML = `
+        <div class="phase-bar-label">${phaseNames[i]}</div>
+        <div class="phase-bar-track"><div class="phase-bar-fill" style="width:0%" data-w="${p}%"></div></div>
+        <div class="phase-bar-count">${d.done}/${d.all}</div>
+      `;
+      container.appendChild(row);
+    });
+    setTimeout(() => {
+      document.querySelectorAll('.phase-bar-fill').forEach(f => { f.style.width = f.dataset.w; });
+    }, 200);
+  }
+
+  function saveProgress() {
+    const state = Array.from(document.querySelectorAll('.topic-tag')).map(t => t.classList.contains('done'));
+    localStorage.setItem('devopstech-v2', JSON.stringify(state));
+  }
+
+  function loadProgress() {
+    const raw = localStorage.getItem('devopstech-v2');
+    if (!raw) return;
+    const state = JSON.parse(raw);
+    const tags = document.querySelectorAll('.topic-tag');
+    state.forEach((done, i) => { if (done && tags[i]) tags[i].classList.add('done'); });
+    updateProgress();
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  window.addEventListener('load', () => {
+    loadProgress();
+    updateProgress();
+    document.querySelector('.phase').classList.add('active');
+  });
+</script>
+</body>
+</html>
